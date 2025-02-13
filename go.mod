@@ -3,8 +3,8 @@ module github.com/ZolaraProject/user-api
 go 1.23.2
 
 require (
-	github.com/ZolaraProject/library v0.1.0
-	github.com/ZolaraProject/pki-vault-service v0.1.0-rc37
+	github.com/ZolaraProject/library v0.1.1-rc00
+	github.com/ZolaraProject/pki-vault-service v0.1.0-rc38
 	github.com/gorilla/mux v1.8.1
 	google.golang.org/grpc v1.70.0
 )
@@ -17,7 +17,3 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250127172529-29210b9bc287 // indirect
 	google.golang.org/protobuf v1.36.4 // indirect
 )
-
-replace github.com/ZolaraProject/pki-vault-service => ../pki-vault-service
-
-replace github.com/ZolaraProject/library => ../library
