@@ -72,11 +72,11 @@ jobs:
     - name: Push to Harbor
       run: |
         echo "Pushing the image to Harbor"
-        docker tag ko.local/user-api-service:${{ env.ZOLARA_GIT_TAG }} nexuszolara.me/zolara-microservice/user-api-service:${{ env.ZOLARA_GIT_TAG }}
-        docker push nexuszolara.me/zolara-microservice/user-api-service:${{ env.ZOLARA_GIT_TAG }}
+        docker tag ko.local/user-api:${{ env.ZOLARA_GIT_TAG }} nexuszolara.me/zolara-microservice/user-api:${{ env.ZOLARA_GIT_TAG }}
+        docker push nexuszolara.me/zolara-microservice/user-api:${{ env.ZOLARA_GIT_TAG }}
 
         echo "Pushing the Helm chart to Harbor"
-        sed -i 's#ZOLARA_GIT_TAG#${{ env.ZOLARA_GIT_TAG }}#g' helm/user-api-service/Chart.yaml
-        sed -i 's#ZOLARA_GIT_TAG#${{ env.ZOLARA_GIT_TAG }}#g' helm/user-api-service/values.yaml
-        helm package helm/user-api-service
-        HELM_EXPERIMENTAL_OCI=1 helm push user-api-service-helm-${{ env.ZOLARA_GIT_TAG }}.tgz oci://nexuszolara.me/zolara-microservice
+        sed -i 's#ZOLARA_GIT_TAG#${{ env.ZOLARA_GIT_TAG }}#g' helm/user-api/Chart.yaml
+        sed -i 's#ZOLARA_GIT_TAG#${{ env.ZOLARA_GIT_TAG }}#g' helm/user-api/values.yaml
+        helm package helm/user-api
+        HELM_EXPERIMENTAL_OCI=1 helm push user-api-helm-${{ env.ZOLARA_GIT_TAG }}.tgz oci://nexuszolara.me/zolara-microservice
