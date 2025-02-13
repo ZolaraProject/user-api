@@ -1,0 +1,113 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "User Authentication API"
+
+tags:
+  - name: "User"
+    description: "Endpoints for regular users"
+
+paths:
+  /users:
+    get:
+      tags:
+        - "User"
+      summary: "Get all users"
+      produces:
+        - "application/json"
+      operationId: "getUsers"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "search"
+          in: "query"
+          description: "Search string"
+          required: false
+          type: "string"
+        - name: "sort"
+          in: "query"
+          description: "Sort column"
+          required: false
+          type: "string"
+        - name: "order"
+          in: "query"
+          description: "Sort order"
+          required: false
+          type: "string"
+          enum:
+            - "asc"
+            - "desc"
+          default: "asc"
+        - name: "limit"
+          in: "query"
+          description: "Limit number of results"
+          required: false
+          type: "integer"
+          format: "int64"
+        - name: "offset"
+          in: "query"
+          description: "Start index of results"
+          required: false
+          type: "integer"
+          format: "int64"
+      responses:
+        200:
+          description: "Successful retrieval of users"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/UserList"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+
+definitions:
+  UserList:
+    type: "object"
+    properties:
+      users:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserInList"
+      total:
+        type: "integer"
+        format: "int64"
+    required:
+      - users
+      - total
+
+  UserInList:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+          - "admin"
+          - "user"
+    required:
+      - id
+      - username
+      - email
+
+  Response:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+      message:
+        type: "string"
+    required:
+      - token
+      - message

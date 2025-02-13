@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "userapi.name" . }}-dpl"
+  labels:
+{{ include "userapi.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector: 
+    matchLabels:
+{{ include "userapi.matchLabels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "userapi.labels" . | indent 8 }}
+      annotations:
+        kubectl.kubernetes.io/default-logs-container: {{ include "userapi.name" . }}
+    spec:
+      {{- with .Values.podSecurityContext }}
+      podSecurityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ include "userapi.name" . }}
+        image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.port }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "userapi.name" . }}-cm
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+        lifecycle:
+          {{ toYaml .Values.lifecycle | nindent 10 }}
