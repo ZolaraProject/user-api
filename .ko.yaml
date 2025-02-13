@@ -1,0 +1,7 @@
+builds:
+- id: user-api
+  dir: ./
+  outputImage: nexuszolara.me/zolara-microservice/user-api
+  ldflags:
+  - -s -w
+  
