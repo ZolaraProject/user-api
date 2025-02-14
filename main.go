@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	s "github.com/ZolaraProject/user-api/userapiserver"
+	sw "github.com/ZolaraProject/user-api/userapiserver"
 )
 
 const (
@@ -19,11 +19,11 @@ const (
 
 func main() {
 	var ok bool
-	s.PkiVaultServiceHost, ok = os.LookupEnv("PKI_VAULT_SERVICE_HOST")
+	sw.PkiVaultServiceHost, ok = os.LookupEnv("PKI_VAULT_SERVICE_HOST")
 	if !ok {
 		log.Fatal("Error: could not read $PKI_VAULT_SERVICE_HOST")
 	}
-	s.PkiVaultServicePort, ok = os.LookupEnv("PKI_VAULT_SERVICE_PORT")
+	sw.PkiVaultServicePort, ok = os.LookupEnv("PKI_VAULT_SERVICE_PORT")
 	if !ok {
 		log.Fatal("Error: could not read $PKI_VAULT_SERVICE_PORT")
 	}
@@ -40,7 +40,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%v", exposePort),
-		Handler: s.NewRouter(),
+		Handler: sw.NewRouter(),
 	}
 
 	go server.ListenAndServe()

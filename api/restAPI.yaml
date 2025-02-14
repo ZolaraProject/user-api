@@ -3,6 +3,7 @@ info:
   version: "1.0.0"
   title: "User Authentication API"
 
+basePath: "/api/user"
 tags:
   - name: "User"
     description: "Endpoints for regular users"
