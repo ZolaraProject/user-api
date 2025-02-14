@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/ZolaraProject/library v0.1.1-rc00
-	github.com/ZolaraProject/pki-vault-service v0.1.0-rc38
+	github.com/ZolaraProject/pki-vault-service v0.1.0-rc45
 	github.com/gorilla/mux v1.8.1
 	google.golang.org/grpc v1.70.0
 )

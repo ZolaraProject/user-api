@@ -24,7 +24,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	client := pkiVaultService.NewPkiVaultClient(conn)
+	client := pkiVaultService.NewPkiVaultServiceClient(conn)
 
 	users, err := client.GetUsers(ctx, &pkiVaultService.UserRequest{})
 	if err != nil {

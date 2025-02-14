@@ -57,7 +57,7 @@ var routes = Routes{
 	Route{
 		"Index",
 		"GET",
-		"/api/configuration/",
+		"/api/user/",
 		Index,
 	},
 

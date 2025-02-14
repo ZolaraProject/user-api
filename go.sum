@@ -1,7 +1,7 @@
 github.com/ZolaraProject/library v0.1.1-rc00 h1:OJGsqWPspoaBfz7iQQbiDenkVzQ2lyWF8XyeBbTF5oc=
 github.com/ZolaraProject/library v0.1.1-rc00/go.mod h1:jwEHQTDEOOvK1+fRBzKXzUIU8w5IL7PEcnacbaCYN9M=
-github.com/ZolaraProject/pki-vault-service v0.1.0-rc38 h1:DuhKYLzEILNOp5qmLDGga4m+q85X7iCBZdX+qcojzT8=
-github.com/ZolaraProject/pki-vault-service v0.1.0-rc38/go.mod h1:rEGhNuREWREGVPuX9Z1JRzrGimf+JXml2tzoY0v7hzo=
+github.com/ZolaraProject/pki-vault-service v0.1.0-rc45 h1:OD/yEgSdk1nxIYWv8rJ9n8JSaPYHvnZwfBEe/4wfTAY=
+github.com/ZolaraProject/pki-vault-service v0.1.0-rc45/go.mod h1:kPke4zdePqun6ZoEu+deGbTGol0cTOdQZczaPIv1038=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=
 github.com/go-logr/logr v1.4.2/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=
