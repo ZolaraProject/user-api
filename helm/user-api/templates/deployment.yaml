@@ -39,3 +39,9 @@ spec:
             port: 8080
         lifecycle:
           {{ toYaml .Values.lifecycle | nindent 10 }}
+        env:
+          - name: JWT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: jwtSecretKey

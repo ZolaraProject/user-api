@@ -7,6 +7,8 @@ basePath: "/api/user"
 tags:
   - name: "User"
     description: "Endpoints for regular users"
+  - name: "Auth"
+    description: "Endpoints for user authentication"
 
 paths:
   /users:
@@ -18,7 +20,7 @@ paths:
         - "application/json"
       operationId: "getUsers"
       security:
-        - Bearer: []
+        - ADMIN: []
       parameters:
         - name: "search"
           in: "query"
@@ -65,7 +67,228 @@ paths:
         404:
           description: "Not Found"
 
+  # /user:
+  #   get:
+  #     tags:
+  #       - "User"
+  #     summary: "Get user by id"
+  #     produces:
+  #       - "application/json"
+  #     operationId: "getUser"
+  #     security:
+  #       - USER: []
+  #     responses:
+  #       200:
+  #         description: "Successful retrieval of user"
+  #         schema:
+  #           $ref: "#/definitions/UserProfile"
+  #       401:
+  #         description: "Unauthorized"
+  #       403:
+  #         description: "Forbidden"
+  #       404:
+  #         description: "Not Found"
+  #   put:
+  #     tags:
+  #       - "User"
+  #     summary: "Update user by id"
+  #     produces:
+  #       - "application/json"
+  #     operationId: "updateUser"
+  #     security:
+  #       - USER: []
+  #     parameters:
+  #       - name: "user"
+  #         in: "body"
+  #         description: "User object"
+  #         required: true
+  #         schema:
+  #           $ref: "#/definitions/UserInList"
+  #     responses:
+  #       200:
+  #         description: "Successful update of user"
+  #         schema:
+  #           $ref: "#/definitions/UserCreatedResponse"
+  #       401:
+  #         description: "Unauthorized"
+  #       403:
+  #         description: "Forbidden"
+  #       404:
+  #         description: "Not Found"
+  #   delete:
+  #     tags:
+  #       - "User"
+  #     summary: "Delete user by id"
+  #     produces:
+  #       - "application/json"
+  #     operationId: "deleteUser"
+  #     security:
+  #       - USER: []
+  #     responses:
+  #       200:
+  #         description: "Successful deletion of user"
+  #         schema:
+  #           $ref: "#/definitions/Response"
+  #       401:
+  #         description: "Unauthorized"
+  #       403:
+  #         description: "Forbidden"
+  #       404:
+  #         description: "Not Found"
+
+  /signIn:
+    post:
+      tags:
+        - "Auth"
+      summary: "Sign in user"
+      produces:
+        - "application/json"
+      operationId: "logIn"
+      parameters:
+        - name: "user"
+          in: "body"
+          description: "User object"
+          required: true
+          schema:
+            $ref: "#/definitions/UserSignInRequest"
+      responses:
+        200:
+          description: "User signed in"
+          schema:
+            $ref: "#/definitions/Response"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+        - "Auth"
+      summary: "Sign out user"
+      produces:
+        - "application/json"
+      operationId: "logOut"
+      security:
+        - USER: []
+      responses:
+        200:
+          description: "User signed out"
+          schema:
+            $ref: "#/definitions/Response"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+
+  /register:
+    post:
+      tags:
+        - "Auth"
+      summary: "Create a new user"
+      produces:
+        - "application/json"
+      operationId: "registerUser"
+      parameters:
+        - name: "user"
+          in: "body"
+          description: "User object"
+          required: true
+          schema:
+            $ref: "#/definitions/UserRegisterRequest"
+      responses:
+        201:
+          description: "User created"
+          schema:
+            $ref: "#/definitions/UserCreatedResponse"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+
+securityDefinitions:
+  USER:
+    type: apiKey
+    in: header
+    name: X-Csrf-Token
+  ADMIN:
+    type: apiKey
+    in: header
+    name: X-Csrf-Token
+
 definitions:
+  UserRegisterRequest:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+    required:
+      - username
+      - email
+      - password
+
+  UserSignInRequest:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+    required:
+      - username
+      - password
+
+  UserProfile:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+          - "admin"
+          - "user"
+      languages:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserLanguageProfile"
+      interests:
+        type: "array"
+        items:
+          type: "string"
+    required:
+      - id
+      - username
+      - email
+
+  UserLanguageProfile:
+    type: "object"
+    properties:
+      language:
+        type: "string"
+      actions:
+        type: "array"
+        items:
+          type: "string"
+    required:
+      - language
+      - actions
+
   UserList:
     type: "object"
     properties:
@@ -101,6 +324,21 @@ definitions:
       - id
       - username
       - email
+
+  UserCreatedResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+      message:
+        type: "string"
+      createdId:
+        type: "integer"
+        format: "int64"
+    required:
+      - token
+      - message
+      - createdId
 
   Response:
     type: "object"

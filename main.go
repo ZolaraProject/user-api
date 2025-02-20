@@ -27,6 +27,11 @@ func main() {
 	if !ok {
 		log.Fatal("Error: could not read $PKI_VAULT_SERVICE_PORT")
 	}
+	sw.JwtSecretKey, ok = os.LookupEnv("JWT_SECRET_KEY")
+	if !ok {
+		log.Fatal("Error: could not read $JWT_SECRET_KEY")
+	}
+	fmt.Println("Jwt secret key: ", sw.JwtSecretKey)
 
 	exposePort, ok := os.LookupEnv("EXPOSE_PORT")
 	if !ok {
@@ -40,7 +45,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%v", exposePort),
-		Handler: sw.NewRouter(),
+		Handler: sw.NewRouter(sw.JwtSecretKey),
 	}
 
 	go server.ListenAndServe()

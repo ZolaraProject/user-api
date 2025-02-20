@@ -15,23 +15,26 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	security "github.com/ZolaraProject/library/security"
 )
 
 type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
+	Name                string
+	Method              string
+	Pattern             string
+	HandlerFunc         http.HandlerFunc
+	RequiredPermissions []string
 }
 
 type Routes []Route
 
-func NewRouter() *mux.Router {
+func NewRouter(jwtSecretKey string) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true).UseEncodedPath()
 	for _, route := range routes {
 		var handler http.Handler
 		handler = route.HandlerFunc
 		handler = Logger(handler, route.Name)
+		handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey))
 
 		router.
 			Methods(route.Method).
@@ -59,6 +62,7 @@ var routes = Routes{
 		"GET",
 		"/api/user/",
 		Index,
+		[]string{},
 	},
 
 	Route{
@@ -66,6 +70,31 @@ var routes = Routes{
 		"GET",
 		"/healthz",
 		Healthz,
+		[]string{},
+	},
+
+	Route{
+		"LogIn",
+		strings.ToUpper("Post"),
+		"/api/user/signIn",
+		LogIn,
+		[]string{  },
+	},
+
+	Route{
+		"LogOut",
+		strings.ToUpper("Delete"),
+		"/api/user/signIn",
+		LogOut,
+		[]string{ "USER", },
+	},
+
+	Route{
+		"RegisterUser",
+		strings.ToUpper("Post"),
+		"/api/user/register",
+		RegisterUser,
+		[]string{  },
 	},
 
 	Route{
@@ -73,5 +102,6 @@ var routes = Routes{
 		strings.ToUpper("Get"),
 		"/api/user/users",
 		GetUsers,
+		[]string{ "ADMIN", },
 	},
 }

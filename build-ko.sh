@@ -15,7 +15,6 @@ microservice=user-api
 user=docker #pass=tcuser
 baseImageTag=v0.1.3
 imageTag=ZOLARA_GIT_TAG
-repoUrl=nexuszolara.me/trinity-microservice
 
 while getopts "t:h" option; do
     options+="$option"

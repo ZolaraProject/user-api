@@ -74,7 +74,7 @@ paths:
         "404":
           description: "Not Found"
       security:
-      - Bearer: []
+      - ADMIN: []
   /signIn:
     post:
       tags:
@@ -122,7 +122,7 @@ paths:
         "404":
           description: "Not Found"
       security:
-      - Bearer: []
+      - USER: []
   /register:
     post:
       tags:
@@ -150,6 +150,15 @@ paths:
           description: "Forbidden"
         "404":
           description: "Not Found"
+securityDefinitions:
+  USER:
+    type: "apiKey"
+    name: "X-Csrf-Token"
+    in: "header"
+  ADMIN:
+    type: "apiKey"
+    name: "X-Csrf-Token"
+    in: "header"
 definitions:
   UserRegisterRequest:
     type: "object"

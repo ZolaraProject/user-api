@@ -9,11 +9,9 @@
 
 package models
 
-type UserCreatedResponse struct {
+type UserSignInRequest struct {
 
-	Token string `json:"token"`
+	Username string `json:"username"`
 
-	Message string `json:"message"`
-
-	CreatedId int64 `json:"createdId"`
+	Password string `json:"password"`
 }

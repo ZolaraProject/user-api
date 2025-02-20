@@ -10,6 +10,7 @@ import (
 var (
 	PkiVaultServiceHost string
 	PkiVaultServicePort string
+	JwtSecretKey        string
 )
 
 func writeStandardResponse(r *http.Request, w http.ResponseWriter, grpcToken string, message string) {

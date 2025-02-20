@@ -23,11 +23,12 @@ import (
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	ctx, grpcToken := grpctoken.CreateContextFromHeader(r)
+	ctx, grpcToken := grpctoken.CreateContextFromHeader(r, JwtSecretKey)
 
 	// Create gRPC client
 	conn, err := grpc.Dial(fmt.Sprintf("%v:%v", PkiVaultServiceHost, PkiVaultServicePort), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
+		logger.Err(grpcToken, "failed to establish gRPC connection: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		writeStandardResponse(r, w, grpcToken, fmt.Sprintf("CreateAbstractClass could not establish gRPC connection: %v", err))
 		return
@@ -37,8 +38,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	users, err := client.GetUsers(ctx, &pkiVaultService.UserRequest{})
 	if err != nil {
-		logger.Err("failed to get user: %s", err)
-
+		logger.Err(grpcToken, "failed to get user: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		writeStandardResponse(r, w, grpcToken, "failed to get users")
 		return
@@ -46,7 +46,6 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	userList := []models.UserInList{}
 	for _, user := range users.GetUsers() {
-		logger.Info("User: %v", user)
 		userList = append(userList, models.UserInList{
 			Id:       user.GetId(),
 			Username: user.GetUsername(),
@@ -60,8 +59,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		Total: users.GetTotal(),
 	})
 	if err != nil {
-		logger.Err("failed to marshal response: %s", err)
-
+		logger.Err(grpcToken, "failed to marshal response: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		writeStandardResponse(r, w, grpcToken, "failed to marshal response")
 		return

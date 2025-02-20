@@ -13,5 +13,5 @@ type UserLanguageProfile struct {
 
 	Language string `json:"language"`
 
-	ActionLevels []UserActionLevel `json:"actionLevels"`
+	Actions []string `json:"actions"`
 }
