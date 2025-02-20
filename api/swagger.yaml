@@ -1,0 +1,301 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "User Authentication API"
+basePath: "/api/user"
+tags:
+- name: "User"
+  description: "Endpoints for regular users"
+- name: "Auth"
+  description: "Endpoints for user authentication"
+paths:
+  /users:
+    get:
+      tags:
+      - "User"
+      summary: "Get all users"
+      operationId: "getUsers"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "search"
+        in: "query"
+        description: "Search string"
+        required: false
+        type: "string"
+        x-exportParamName: "Search"
+        x-optionalDataType: "String"
+      - name: "sort"
+        in: "query"
+        description: "Sort column"
+        required: false
+        type: "string"
+        x-exportParamName: "Sort"
+        x-optionalDataType: "String"
+      - name: "order"
+        in: "query"
+        description: "Sort order"
+        required: false
+        type: "string"
+        default: "asc"
+        enum:
+        - "asc"
+        - "desc"
+        x-exportParamName: "Order"
+        x-optionalDataType: "String"
+      - name: "limit"
+        in: "query"
+        description: "Limit number of results"
+        required: false
+        type: "integer"
+        format: "int64"
+        x-exportParamName: "Limit"
+        x-optionalDataType: "Int64"
+      - name: "offset"
+        in: "query"
+        description: "Start index of results"
+        required: false
+        type: "integer"
+        format: "int64"
+        x-exportParamName: "Offset"
+        x-optionalDataType: "Int64"
+      responses:
+        "200":
+          description: "Successful retrieval of users"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/UserList"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      security:
+      - Bearer: []
+  /signIn:
+    post:
+      tags:
+      - "Auth"
+      summary: "Sign in user"
+      operationId: "logIn"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "User object"
+        required: true
+        schema:
+          $ref: "#/definitions/UserSignInRequest"
+        x-exportParamName: "User"
+      responses:
+        "200":
+          description: "User signed in"
+          schema:
+            $ref: "#/definitions/Response"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+    delete:
+      tags:
+      - "Auth"
+      summary: "Sign out user"
+      operationId: "logOut"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "User signed out"
+          schema:
+            $ref: "#/definitions/Response"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      security:
+      - Bearer: []
+  /register:
+    post:
+      tags:
+      - "Auth"
+      summary: "Create a new user"
+      operationId: "registerUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "User object"
+        required: true
+        schema:
+          $ref: "#/definitions/UserRegisterRequest"
+        x-exportParamName: "User"
+      responses:
+        "201":
+          description: "User created"
+          schema:
+            $ref: "#/definitions/UserCreatedResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+definitions:
+  UserRegisterRequest:
+    type: "object"
+    required:
+    - "email"
+    - "password"
+    - "username"
+    properties:
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+  UserSignInRequest:
+    type: "object"
+    required:
+    - "password"
+    - "username"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+  UserProfile:
+    type: "object"
+    required:
+    - "email"
+    - "id"
+    - "username"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+        - "admin"
+        - "user"
+      languages:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserLanguageProfile"
+      interests:
+        type: "array"
+        items:
+          type: "string"
+  UserLanguageProfile:
+    type: "object"
+    required:
+    - "actions"
+    - "language"
+    properties:
+      language:
+        type: "string"
+      actions:
+        type: "array"
+        items:
+          type: "string"
+  UserList:
+    type: "object"
+    required:
+    - "total"
+    - "users"
+    properties:
+      users:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserInList"
+      total:
+        type: "integer"
+        format: "int64"
+    example:
+      total: 6
+      users:
+      - password: "password"
+        role: "admin"
+        id: 0
+        email: "email"
+        username: "username"
+      - password: "password"
+        role: "admin"
+        id: 0
+        email: "email"
+        username: "username"
+  UserInList:
+    type: "object"
+    required:
+    - "email"
+    - "id"
+    - "username"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+        - "admin"
+        - "user"
+    example:
+      password: "password"
+      role: "admin"
+      id: 0
+      email: "email"
+      username: "username"
+  UserCreatedResponse:
+    type: "object"
+    required:
+    - "createdId"
+    - "message"
+    - "token"
+    properties:
+      token:
+        type: "string"
+      message:
+        type: "string"
+      createdId:
+        type: "integer"
+        format: "int64"
+    example:
+      createdId: 0
+      message: "message"
+      token: "token"
+  Response:
+    type: "object"
+    required:
+    - "message"
+    - "token"
+    properties:
+      token:
+        type: "string"
+      message:
+        type: "string"
+    example:
+      message: "message"
+      token: "token"
