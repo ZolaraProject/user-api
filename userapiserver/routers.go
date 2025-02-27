@@ -34,7 +34,7 @@ func NewRouter(jwtSecretKey string) *mux.Router {
 		var handler http.Handler
 		handler = route.HandlerFunc
 		handler = Logger(handler, route.Name)
-		handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey))
+		handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey, RedisPool))
 
 		router.
 			Methods(route.Method).

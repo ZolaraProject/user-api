@@ -45,3 +45,8 @@ spec:
               secretKeyRef:
                 name: jwt-secret
                 key: jwtSecretKey
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis-credentials
+                key: redis-password

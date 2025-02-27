@@ -5,12 +5,17 @@ import (
 	"net/http"
 
 	models "github.com/ZolaraProject/user-api/models"
+	"github.com/mediocregopher/radix/v3"
 )
 
 var (
 	PkiVaultServiceHost string
 	PkiVaultServicePort string
 	JwtSecretKey        string
+	RedisHost           string
+	RedisPort           string
+	RedisPassword       string
+	RedisPool           *radix.Pool
 )
 
 func writeStandardResponse(r *http.Request, w http.ResponseWriter, grpcToken string, message string) {

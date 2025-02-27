@@ -24,6 +24,7 @@ import (
 	"github.com/ZolaraProject/user-api/models"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 func LogIn(w http.ResponseWriter, r *http.Request) {
@@ -111,20 +112,35 @@ func LogIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogOut(w http.ResponseWriter, r *http.Request) {
-	// ctx, grpcToken := grpctoken.CreateContextFromHeader(r)
+	ctx, grpcToken := grpctoken.CreateContextFromHeader(r, JwtSecretKey)
 
-	// // Create gRPC client
-	// conn, err := grpc.Dial(fmt.Sprintf("%v:%v", PkiVaultServiceHost, PkiVaultServicePort), grpc.WithInsecure(), grpc.WithBlock())
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	writeStandardResponse(r, w, grpcToken, fmt.Sprintf("CreateAbstractClass could not establish gRPC connection: %v", err))
-	// 	return
-	// }
-	// defer conn.Close()
-	// client := pkiVaultService.NewPkiVaultServiceClient(conn)
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		logger.Err(grpcToken, "failed to get metadata from context")
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, "failed to get metadata from context")
+		return
+	}
+
+	if len(md.Get("zolara-user-id")) == 0 {
+		logger.Err(grpcToken, "failed to get user id from context")
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, "failed to get user id from context")
+		return
+	}
+
+	if err := jwtToken.BlacklistToken(r, ctx, RedisPool); err != nil {
+		logger.Err(grpcToken, "failed to blacklist token: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, "failed to blacklist token")
+		return
+	}
+
+	jwtToken.ExpireToken(w)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
+	writeStandardResponse(r, w, grpcToken, "logged out successfully")
 }
 
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
