@@ -14,8 +14,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gorilla/mux"
 	security "github.com/ZolaraProject/library/security"
+	"github.com/gorilla/mux"
 )
 
 type Route struct {
@@ -34,7 +34,9 @@ func NewRouter(jwtSecretKey string) *mux.Router {
 		var handler http.Handler
 		handler = route.HandlerFunc
 		handler = Logger(handler, route.Name)
-		handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey, RedisPool))
+		if !strings.EqualFold(route.Name, "Index") && !strings.EqualFold(route.Name, "Healthz") {
+			handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey, RedisPool))
+		}
 
 		router.
 			Methods(route.Method).
@@ -78,7 +80,7 @@ var routes = Routes{
 		strings.ToUpper("Post"),
 		"/api/user/signIn",
 		LogIn,
-		[]string{  },
+		[]string{},
 	},
 
 	Route{
@@ -86,7 +88,7 @@ var routes = Routes{
 		strings.ToUpper("Delete"),
 		"/api/user/signIn",
 		LogOut,
-		[]string{ "USER", },
+		[]string{"USER"},
 	},
 
 	Route{
@@ -94,7 +96,7 @@ var routes = Routes{
 		strings.ToUpper("Post"),
 		"/api/user/register",
 		RegisterUser,
-		[]string{  },
+		[]string{},
 	},
 
 	Route{
@@ -102,6 +104,6 @@ var routes = Routes{
 		strings.ToUpper("Get"),
 		"/api/user/users",
 		GetUsers,
-		[]string{ "ADMIN", },
+		[]string{"ADMIN"},
 	},
 }

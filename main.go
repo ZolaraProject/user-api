@@ -29,11 +29,11 @@ func main() {
 	if !ok {
 		log.Fatal("Error: could not read $PKI_VAULT_SERVICE_PORT")
 	}
+
 	sw.JwtSecretKey, ok = os.LookupEnv("JWT_SECRET_KEY")
 	if !ok {
 		log.Fatal("Error: could not read $JWT_SECRET_KEY")
 	}
-	fmt.Println("Jwt secret key: ", sw.JwtSecretKey)
 
 	sw.RedisHost, ok = os.LookupEnv("REDIS_HOST")
 	if !ok {
@@ -65,7 +65,6 @@ func main() {
 	if !ok {
 		exposePort = defaultExposePort
 	}
-
 	log.Printf(fmt.Sprintf("Server listens on port %v", exposePort))
 
 	termChan := make(chan os.Signal)
