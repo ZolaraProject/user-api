@@ -62,6 +62,7 @@ jobs:
       env:
         KO_DOCKER_REPO: nexuszolara.me/zolara-microservice
         GODEBUG: x509ignoreCN=1
+        GOSUMDB: off
       run: |
         ko login nexuszolara.me --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
         # ko build -t ${{ env.ZOLARA_GIT_TAG }} .
