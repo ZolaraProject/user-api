@@ -9,3 +9,5 @@ data:
   LOG_LEVEL: {{ .Values.logLevel | quote }}
   PKI_VAULT_SERVICE_HOST: {{ tpl .Values.pkiVaultService.host . | quote }}
   PKI_VAULT_SERVICE_PORT: {{ .Values.pkiVaultService.port | quote }}
+  REDIS_HOST: {{ tpl .Values.redis.host . | quote }}
+  REDIS_PORT: {{ .Values.redis.port | quote }}
