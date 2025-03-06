@@ -34,9 +34,16 @@ func NewRouter(jwtSecretKey string) *mux.Router {
 		var handler http.Handler
 		handler = route.HandlerFunc
 		handler = Logger(handler, route.Name)
-		if !strings.EqualFold(route.Name, "Index") && !strings.EqualFold(route.Name, "Healthz") {
-			handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey, RedisPool))
+		if route.Name == "Healthz" || route.Name == "Index" {
+			router.
+				Methods(route.Method).
+				Path(route.Pattern).
+				Name(route.Name).
+				Handler(handler)
+			continue
 		}
+
+		handler = http.HandlerFunc(security.PermissionCheck(handler.ServeHTTP, route.RequiredPermissions, jwtSecretKey, RedisPool))
 
 		router.
 			Methods(route.Method).
