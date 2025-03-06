@@ -29,7 +29,7 @@ jobs:
     - name: Build with tag
       run: |
         GOSUMDB=off go mod tidy
-        go build -a -installsuffix cgo -o ./app .
+        GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./app .
 
     - name: Upload artifact with tag
       uses: actions/upload-artifact@v4

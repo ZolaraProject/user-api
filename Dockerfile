@@ -9,5 +9,6 @@ WORKDIR /root/
 EXPOSE 8080
 
 COPY ./app /root/app
+RUN chmod +x /root/app
 
 ENTRYPOINT ["/root/app"]
