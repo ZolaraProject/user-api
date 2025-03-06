@@ -29,7 +29,7 @@ jobs:
     - name: Build with tag
       run: |
         GOSUMDB=off go mod tidy
-        GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./app .
+        go build -a -installsuffix cgo -o app .
 
     - name: Upload artifact with tag
       uses: actions/upload-artifact@v4
@@ -57,9 +57,19 @@ jobs:
         username: ${{ secrets.HARBOR_USERNAME  }}
         password: ${{ secrets.HARBOR_PASSWORD }}
 
-    - name: build docker image
+    - uses: ko-build/setup-ko@v0.8
+    - name: Build and push Docker image using ko and .ko.yaml
+      env:
+        KO_DOCKER_REPO: nexuszolara.me/zolara-microservice
+        GODEBUG: x509ignoreCN=1
+        GOSUMDB: off
+        GOPRIVATE: github.com/ZolaraProject/pki-vault-service
       run: |
-        docker build -t ko.local/user-api:${{ env.ZOLARA_GIT_TAG }} .
+        ko login nexuszolara.me --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
+        # ko build -t ${{ env.ZOLARA_GIT_TAG }} .
+        GOSUMDB=off GOPRIATE=github.com/ZolaraProject/pki-vault-service go mod tidy
+        ./build-ko.sh -t ${{ env.ZOLARA_GIT_TAG }}
+        # ./build-ko.sh -t ${{ env.ZOLARA_GIT_TAG }}
 
     - name: debug zolara git tag
       run: |
