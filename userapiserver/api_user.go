@@ -13,8 +13,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	grpctoken "github.com/ZolaraProject/library/grpctoken"
 	logger "github.com/ZolaraProject/library/logger"
@@ -68,4 +70,98 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	ctx, grpcToken := grpctoken.CreateContextFromHeader(r, JwtSecretKey)
+
+	var userToCreate models.UserUpdateRequest
+	err := json.NewDecoder(r.Body).Decode(&userToCreate)
+	if err != nil {
+		logger.Err(grpcToken, "failed to decode request body: %s", err)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		writeStandardResponse(r, w, grpcToken, fmt.Sprintf("failed to decode request body: %s", err.Error()))
+		return
+	}
+
+	if err := validatePassword(userToCreate.Password); err != nil {
+		logger.Err(grpcToken, "password validation failed: %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		writeStandardResponse(r, w, grpcToken, fmt.Sprintf("password validation failed: %s", err.Error()))
+		return
+	}
+
+	hashedPassword, err := hashPassword(userToCreate.Password)
+	if err != nil {
+		logger.Err(grpcToken, "failed to hash password: %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		writeStandardResponse(r, w, grpcToken, fmt.Sprintf("failed to hash password: %s", err.Error()))
+		return
+	}
+
+	// Create gRPC client
+	conn, err := grpc.Dial(fmt.Sprintf("%v:%v", PkiVaultServiceHost, PkiVaultServicePort), grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		logger.Err(grpcToken, "failed to establish gRPC connection: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, fmt.Sprintf("CreateAbstractClass could not establish gRPC connection: %v", err))
+		return
+	}
+	defer conn.Close()
+	client := pkiVaultService.NewPkiVaultServiceClient(conn)
+
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		logger.Err(grpcToken, "metadata not found")
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, "metadata not found")
+		return
+	}
+
+	i := md.Get("zolara-user-id")[0]
+	userId, err := strconv.ParseInt(i, 10, 64)
+	if err != nil {
+		logger.Err(grpcToken, "failed to parse user id: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, fmt.Sprintf("failed to parse user id: %s", err))
+		return
+	}
+
+	resp, err := client.UpdateUser(ctx, &pkiVaultService.UserUpdateRequest{
+		Id:       userId,
+		Username: userToCreate.Username,
+		Email:    userToCreate.Email,
+		Password: hashedPassword,
+	})
+	if err != nil {
+		logger.Err(grpcToken, "UpdateUser gRPC Error: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		writeStandardResponse(r, w, grpcToken, "UpdateUser gRPC Errors")
+		return
+	}
+
+	response, _ := json.Marshal(&models.Response{
+		Message: resp.GetMessage(),
+		Token:   grpcToken,
+	})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// ctx, grpcToken := grpctoken.CreateContextFromHeader(r, JwtSecretKey)
+
+	// // Create gRPC client
+	// conn, err := grpc.Dial(fmt.Sprintf("%v:%v", PkiVaultServiceHost, PkiVaultServicePort), grpc.WithInsecure(), grpc.WithBlock())
+	// if err != nil {
+	// 	logger.Err(grpcToken, "failed to establish gRPC connection: %v", err)
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	writeStandardResponse(r, w, grpcToken, fmt.Sprintf("CreateAbstractClass could not establish gRPC connection: %v", err))
+	// 	return
+	// }
+	// defer conn.Close()
+	// client := pkiVaultService.NewPkiVaultServiceClient(conn)
 }

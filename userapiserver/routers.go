@@ -14,8 +14,8 @@ import (
 	"net/http"
 	"strings"
 
-	security "github.com/ZolaraProject/library/security"
 	"github.com/gorilla/mux"
+	security "github.com/ZolaraProject/library/security"
 )
 
 type Route struct {
@@ -87,7 +87,7 @@ var routes = Routes{
 		strings.ToUpper("Post"),
 		"/api/user/signIn",
 		LogIn,
-		[]string{},
+		[]string{  },
 	},
 
 	Route{
@@ -95,7 +95,7 @@ var routes = Routes{
 		strings.ToUpper("Delete"),
 		"/api/user/signIn",
 		LogOut,
-		[]string{"USER"},
+		[]string{ "USER", },
 	},
 
 	Route{
@@ -103,7 +103,15 @@ var routes = Routes{
 		strings.ToUpper("Post"),
 		"/api/user/register",
 		RegisterUser,
-		[]string{},
+		[]string{  },
+	},
+
+	Route{
+		"DeleteUser",
+		strings.ToUpper("Delete"),
+		"/api/user/user",
+		DeleteUser,
+		[]string{ "USER", },
 	},
 
 	Route{
@@ -111,6 +119,14 @@ var routes = Routes{
 		strings.ToUpper("Get"),
 		"/api/user/users",
 		GetUsers,
-		[]string{"ADMIN"},
+		[]string{ "ADMIN", },
+	},
+
+	Route{
+		"UpdateUser",
+		strings.ToUpper("Put"),
+		"/api/user/user",
+		UpdateUser,
+		[]string{ "USER", },
 	},
 }
