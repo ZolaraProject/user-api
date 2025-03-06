@@ -67,7 +67,8 @@ jobs:
       run: |
         ko login nexuszolara.me --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
         # ko build -t ${{ env.ZOLARA_GIT_TAG }} .
-        ./build-ko.sh -t ${{ env.ZOLARA_GIT_TAG }}
+        GOSUMDB=off GOPRIATE=github.com/ZolaraProject/pki-vault-service ./build-ko.sh -t ${{ env.ZOLARA_GIT_TAG }}
+        # ./build-ko.sh -t ${{ env.ZOLARA_GIT_TAG }}
 
     - name: debug zolara git tag
       run: |
