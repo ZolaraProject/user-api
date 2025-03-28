@@ -48,9 +48,9 @@ service:
   port: 8080
 
 ingress:
-  host: 20.160.221.93
-  hosts:
-  - 20.160.221.93
+  # host: 20.160.221.93
+  # hosts:
+  # - 20.160.221.93
   extraAnnotations:
     nginx.ingress.kubernetes.io/enable-cors: "false"
     nginx.ingress.kubernetes.io/configuration-snippet: |
