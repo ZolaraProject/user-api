@@ -26,9 +26,14 @@ spec:
               number: {{ $.Values.service.port }}
     {{- end }}
   {{- else }}
-  defaultBackend:
-    service:
-      name: {{ include "userapi.name" . }}
-      port:
-        number: {{ .Values.service.port }}
+  rules:
+    - http:
+        paths:
+        - path: /api/configuration
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ include "userapi.name" . }}
+              port:
+                number: {{ .Values.service.port }}
   {{- end }}
