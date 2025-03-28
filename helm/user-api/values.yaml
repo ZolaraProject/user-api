@@ -47,6 +47,15 @@ service:
   type: ClusterIP
   port: 8080
 
+ingress:
+  host: 20.160.221.93
+  hosts:
+  - 20.160.221.93
+  extraAnnotations:
+    nginx.ingress.kubernetes.io/enable-cors: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

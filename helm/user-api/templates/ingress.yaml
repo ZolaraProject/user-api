@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ include "userapi.name" . }}-ing"
+  annotations:
+    {{- range $key, $value := .Values.ingress.extraAnnotations  }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: "off"
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+  labels: 
+{{ include "userapi.labels" . | indent 4 }}
+spec:
+  rules:
+{{- range .Values.ingress.hosts }}
+  - http:
+      paths:
+      - path: /api/configuration
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "userapi.name" $ }}
+            port: 
+              number: {{ $.Values.service.port }}
+    host: {{ . }}
+{{- end }}
