@@ -11,9 +11,11 @@ metadata:
   labels: 
 {{ include "userapi.labels" . | indent 4 }}
 spec:
+  {{- if .Values.ingress.hosts }}
   rules:
-{{- range .Values.ingress.hosts }}
-  - http:
+  {{- range .Values.ingress.hosts }}
+  - host: {{ . }}
+    http:
       paths:
       - path: /api/configuration
         pathType: ImplementationSpecific
@@ -22,5 +24,12 @@ spec:
             name: {{ include "userapi.name" $ }}
             port: 
               number: {{ $.Values.service.port }}
-    host: {{ . }}
+  {{- end }}
+  {{- else }}
+  defaultBackend:
+    service:
+      name: {{ include "userapi.name" . }}
+      port:
+        number: {{ .Values.service.port }}
+  {{- end }}
 {{- end }}
