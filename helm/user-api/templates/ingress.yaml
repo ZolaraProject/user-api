@@ -11,6 +11,7 @@ metadata:
   labels: 
 {{ include "userapi.labels" . | indent 4 }}
 spec:
+  ingressClassName: nginx
   {{- if .Values.ingress.hosts }}
   rules:
     {{- range .Values.ingress.hosts }}
