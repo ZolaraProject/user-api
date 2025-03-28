@@ -31,5 +31,4 @@ spec:
       name: {{ include "userapi.name" . }}
       port:
         number: {{ .Values.service.port }}
-  {{- end }}
 {{- end }}
