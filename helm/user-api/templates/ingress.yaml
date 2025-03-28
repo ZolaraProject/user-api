@@ -13,7 +13,7 @@ metadata:
 spec:
   {{- if .Values.ingress.hosts }}
   rules:
-  {{- range .Values.ingress.hosts }}
+    {{- range .Values.ingress.hosts }}
   - host: {{ . }}
     http:
       paths:
@@ -24,11 +24,11 @@ spec:
             name: {{ include "userapi.name" $ }}
             port: 
               number: {{ $.Values.service.port }}
-  {{- end }}
+    {{- end }}
   {{- else }}
   defaultBackend:
     service:
       name: {{ include "userapi.name" . }}
       port:
         number: {{ .Values.service.port }}
-{{- end }}
+  {{- end }}
